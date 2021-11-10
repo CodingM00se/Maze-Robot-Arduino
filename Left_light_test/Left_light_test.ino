@@ -1,5 +1,5 @@
 /**
- * Right light sensor test
+ * Left light sensor test
  * Eric McCallum
  */
 
@@ -12,9 +12,9 @@ void setup() {
 }
 
 void loop() {
-  long tRight = rcTime(6);
-  Serial.print("tRight = ");
-  Serial.print(tRight);
+  long tLeft = rcTime(8);
+  Serial.print("tLeft = ");
+  Serial.print(tLeft);
   Serial.println(" us");
   delay(1000);
 }
