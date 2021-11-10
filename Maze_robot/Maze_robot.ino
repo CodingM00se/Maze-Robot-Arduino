@@ -20,7 +20,10 @@ void setup() {
 }
 
 void loop() {
+  /* wall avoidance */
 
+
+  /* front avoidance */
 }
 
 /**
@@ -44,9 +47,25 @@ int irDetect(int irLedPin, int irReceiverPin, long frequency) {
   return ir; // return 1 no detect, return 0 detect
 }
 
+/* 
+
 /**
  * LIGHT SENSOR FUNCTIONS
  */
+
+ /* tf is this */
+ long rcTime(int pin) {
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, HIGH);
+  delay(5);
+  pinMode(pin, INPUT);
+  digitalWrite(pin, LOW);
+  long time = micros();
+  while(digitalRead(pin));
+  time = micros() - time;
+  return time;
+ }
+
 
 /* Controls movement of the robot. 
  *  speedLeft, speedRigh ranges: Backward Linear  Stop  Linear  Forward
