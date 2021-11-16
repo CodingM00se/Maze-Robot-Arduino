@@ -5,8 +5,6 @@
 
 
 void setup() {
-  tone(4, 3000, 1000); // play speaker tone on pin 4, 3000 Hz for 1 s
-  delay(1000);
   pinMode(10, INPUT);
   pinMode(9, OUTPUT);
   Serial.begin(9600);
