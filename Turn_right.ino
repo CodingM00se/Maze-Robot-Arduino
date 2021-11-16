@@ -8,6 +8,6 @@ void setup() {
 }
 
 void loop() {
-  servoLeft.writeMicroseconds(1300);
-  servoRight.writeMicroseconds(1300); 
+  servoLeft.writeMicroseconds(1700);
+  servoRight.writeMicroseconds(1700); 
 }
