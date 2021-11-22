@@ -12,6 +12,8 @@
 
 Servo servoLeft;
 Servo servoRight;
+int irLeft;
+int irRight;
 
 
 // kpl fields
@@ -39,9 +41,6 @@ void setup() {
 
 void loop() {
   kplControl();
-  delay(10);
-  lightManeuver();
-  delay(10);
 }
 
 /**
@@ -78,6 +77,8 @@ void irMeasure() {
 
 /* KPL ir avoidance used to drive away from walls */
 void kplControl() {
+  int irLeft = irDistance(2, 3);
+  int irRight = irDistance(9, 10); //inversed pins to avoid walls 
   int driveLeft = (setpoint - irLeft) * kpl;
   int driveRight = (setpoint - irRight) * kpr;
   maneuver(driveLeft, driveRight, 20);
