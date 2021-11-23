@@ -79,9 +79,15 @@ void irMeasure() {
 void kplControl() {
   int irLeft = irDistance(2, 3);
   int irRight = irDistance(9, 10); //inversed pins to avoid walls 
+
+  if(irLeft == 0 && irRight == 0) {
+    maneuver(200, 200, 20);
+  }
+  else{
   int driveLeft = (setpoint - irLeft) * kpl;
   int driveRight = (setpoint - irRight) * kpr;
   maneuver(driveLeft, driveRight, 20);
+  }
 }
 
 /**
