@@ -5,6 +5,8 @@
     ideas: 
     - replace the light sensors to the side and IR sensors to the front
     - change the light behavior to back up instead of avoid shade (avoid arches in other words) 
+
+    change behavior first and if all else fails, try replacing the locations next class. 
 */
 
 /** Current issues:
@@ -83,7 +85,7 @@ void irMeasure() {
 /* KPL ir avoidance used to drive away from walls */
 void kplControl() {
   int irLeft = irDistance(2, 3);
-  int irRight = irDistance(9, 10); //inversed pins to avoid walls 
+  int irRight = irDistance(9, 10); //inversed pins to avoid walls (right is left and left is right) 
 
   if(irLeft == 0 && irRight == 0) {
     maneuver(200, 200, 20);
