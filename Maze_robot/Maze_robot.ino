@@ -1,11 +1,14 @@
 /** Maze Robot Navigation Sketch
     Written by Eric McCallum
     modified code and reverse engineered from Parallax
+
+    ideas: 
+    - replace the light sensors to the side and IR sensors to the front
+    - change the light behavior to back up instead of avoid shade (avoid arches in other words) 
 */
 
 /** Current issues:
- *  1) Issue with setting the irleft and irRight variables to global accessible variables
- *  2) issue with setting the ir sensors to move into the opposite directions and not towards it 
+ *  can we make a time so that if it gets stuck it backs up after a certain period of time? 
  */
 
 #include <Servo.h>
@@ -14,7 +17,8 @@ Servo servoLeft;
 Servo servoRight;
 int irLeft;
 int irRight;
-
+const float lightMultiplier = 1000.0; // to control the sensitivity of the light sensors 
+float ndShade;  // Normalized differential shade
 
 // kpl fields
 const int setpoint = 2; // setpoint to reference from in the proportional control
@@ -40,6 +44,7 @@ void setup() {
 }
 
 void loop() {
+  lightManeuver();
   kplControl();
 }
 
@@ -98,20 +103,18 @@ void kplControl() {
 void lightManeuver() {
   float tLeft = float(rcTime(8)); // Get left light and make float
   float tRight = float(rcTime(6)); // Get right light and make float
-
-  float ndShade;  // Normalized differential shade
   ndShade = tRight / (tLeft + tRight) - 0.5;  // Calculate and subtract 0.5
 
   int speedLeft, speedRight;  // Declare speed variables
 
   if (ndShade > 0.0) {  // is there shade on the right?
-    speedLeft = int(200.0 - (ndShade * 3000.0)); // slow down left wheel
+    speedLeft = int(200.0 - (ndShade * lightMultiplier)); // slow down left wheel
     speedLeft = constrain(speedLeft, -200, 200);
     speedRight = 200; // Full speed right wheel
   }
 
   else {  // is there shade on the left?
-    speedRight = int(200.0 + (ndShade * 3000.0)); // slow down right wheel
+    speedRight = int(200.0 + (ndShade * lightMultiplier)); // slow down right wheel
     speedRight = constrain(speedRight, -200, 200);
     speedLeft = 200;  // full speed left wheel
   }
