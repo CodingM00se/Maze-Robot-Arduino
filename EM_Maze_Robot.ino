@@ -11,11 +11,16 @@ Servo servoRight;
 int irLeft; // left ir sensor
 int irRight; // right ir sensor
 const int dt = 1000; // general delay time 
+const int dtAvoid = 50; // avoidance function delay time
+const int dtManeuver = 100; // maneuver function delay time 
 
-// kpl fields
+// kp fields
 const int setpoint = 2; // setpoint to reference from in the proportional control
-const int kpl = -35; // proportional control constant left
-const int kpr = -40; // proportional control constant right
+const int kplAvoidance = -45; // proportional control constant left avoidance
+const int kprAvoidance = -55; // proportional control constant right avoidance
+
+const int kplMan = -45;
+const int kprMan = -55;
 
 void setup() {
   tone(4, 3000, 1000); // plays speaker tone
@@ -36,9 +41,8 @@ void setup() {
 }
 
 void loop() {
-  kplManeuver(); // Moves for 10 ms using kpl navigation
-  kplAvoid(); // Avoids obstacles for 10 ms using kpl avoidance 
-  maneuver(150, 150, 85); // move forward at a value of 150 for 85 ms
+  maneuver(175, 175, 140);
+  kplAvoid();
 }
 
 /* Does a frequency sweep to determine a dsitance from x Hz to y Hz */
@@ -74,11 +78,12 @@ void kplAvoid() {
   int irLeft = irDistance(2, 3); // sets left ir sensor to pins 2 and 3
   int irRight = irDistance(9, 10); // sets right ir sensor to pins 9 and 10
   
-  int driveLeft = (setpoint - irLeft) * kpl; // algorithm to determine the left drive value
-  int driveRight = (setpoint - irRight) * kpr; // algorithm to determine the right drive value 
-  maneuver(driveLeft, driveRight, 20); // drive with the values generated in the algorithm
+  int driveLeft = (setpoint - irLeft) * kplAvoidance; // algorithm to determine the left drive value
+  int driveRight = (setpoint - irRight) * kprAvoidance; // algorithm to determine the right drive value 
 
-  delay(10); // wait 10 ms 
+  maneuver(driveLeft, driveRight, 20);
+
+  delay(dtAvoid); // wait avoid time
 }
 
 /* KPL ir direction to navigate through maze (?) */
@@ -86,14 +91,19 @@ void kplManeuver() {
   int irLeft = irDistance(2, 3);  // sets left ir sensor to pins 2 and 3
   int irRight = irDistance(9, 10);  // sets right ir sensor to pins 9 and 10
   
-  int driveLeft = (setpoint - irLeft) * kpl;  // algorithm to determine the left drive value
-  int driveRight = (setpoint - irRight) * kpr;  // algorithm to determine the right drive value 
+  int driveLeft = (setpoint - irLeft) * kplMan;  // algorithm to determine the left drive value
+  int driveRight = (setpoint - irRight) * kprMan;  // algorithm to determine the right drive value
+  int drive = (driveLeft + driveRight) / 2; // Similar to the avoid function, but takes the average for one drive value 
 
-  int drive = (driveLeft + driveRight) / 2; // Similar to the avoid function, but takes the average for one drive value
+  if((driveLeft || driveRight) < 0) {
+    maneuver(0, 0, 20);
+  }
   
+  else if ((driveLeft || driveRight) >= 0)  {
   maneuver(drive, drive, 20); // Drive straight for the average value calculated 
-
-  delay(10); // wait 10 ms 
+  }
+  
+  delay(dtManeuver); // wait maneuver time 
 }
 
 /* Controls movement of the robot.
