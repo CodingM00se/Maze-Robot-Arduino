@@ -6,21 +6,17 @@
 #include <Servo.h> 
 
 // General fields
-Servo servoLeft;
-Servo servoRight;
+Servo servoLeft;  // left servo object
+Servo servoRight; // right servo object
 int irLeft; // left ir sensor
 int irRight; // right ir sensor
 const int dt = 1000; // general delay time 
-const int dtAvoid = 50; // avoidance function delay time
-const int dtManeuver = 100; // maneuver function delay time 
+const int dtAvoid = 30; // avoidance function delay time
 
 // kp fields
 const int setpoint = 2; // setpoint to reference from in the proportional control
 const int kplAvoidance = -45; // proportional control constant left avoidance
 const int kprAvoidance = -55; // proportional control constant right avoidance
-
-const int kplMan = -45;
-const int kprMan = -55;
 
 void setup() {
   tone(4, 3000, 1000); // plays speaker tone
@@ -28,21 +24,21 @@ void setup() {
   Serial.begin(9600); // Serial monitor initilization
 
   // inputs
-  pinMode(10, INPUT);
-  pinMode(3, INPUT);
+  pinMode(10, INPUT); // left IR receiver
+  pinMode(3, INPUT);  // right IR receiver
 
   // outputs
-  pinMode(9, OUTPUT);
-  pinMode(2, OUTPUT);
+  pinMode(9, OUTPUT); // left IR emitter
+  pinMode(2, OUTPUT); // right IR emitter 
 
   // servo attachments
-  servoLeft.attach(13);
-  servoRight.attach(12);
+  servoLeft.attach(13); // left servo to pin 13
+  servoRight.attach(12);  // right servo to pin 12 
 }
 
 void loop() {
-  maneuver(175, 175, 140);
-  kplAvoid();
+  maneuver(130, 130, 100);  // move at a speed of 130 for 100 seconds
+  kplAvoid(); // avoid obstacles for 30 ms
 }
 
 /* Does a frequency sweep to determine a dsitance from x Hz to y Hz */
@@ -81,29 +77,9 @@ void kplAvoid() {
   int driveLeft = (setpoint - irLeft) * kplAvoidance; // algorithm to determine the left drive value
   int driveRight = (setpoint - irRight) * kprAvoidance; // algorithm to determine the right drive value 
 
-  maneuver(driveLeft, driveRight, 20);
+  maneuver(driveLeft, driveRight, 20);  // driver for the calculated values for 20 ms
 
   delay(dtAvoid); // wait avoid time
-}
-
-/* KPL ir direction to navigate through maze (?) */
-void kplManeuver() {
-  int irLeft = irDistance(2, 3);  // sets left ir sensor to pins 2 and 3
-  int irRight = irDistance(9, 10);  // sets right ir sensor to pins 9 and 10
-  
-  int driveLeft = (setpoint - irLeft) * kplMan;  // algorithm to determine the left drive value
-  int driveRight = (setpoint - irRight) * kprMan;  // algorithm to determine the right drive value
-  int drive = (driveLeft + driveRight) / 2; // Similar to the avoid function, but takes the average for one drive value 
-
-  if((driveLeft || driveRight) < 0) {
-    maneuver(0, 0, 20);
-  }
-  
-  else if ((driveLeft || driveRight) >= 0)  {
-  maneuver(drive, drive, 20); // Drive straight for the average value calculated 
-  }
-  
-  delay(dtManeuver); // wait maneuver time 
 }
 
 /* Controls movement of the robot.
